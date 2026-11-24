@@ -12,7 +12,12 @@ import {
 import cookieParser from 'cookie-parser';
 import helmet from "helmet";
 import cors from 'cors';
-import { generalLimiter, authLimiter } from "./middleware/rateLimiters.js";
+import {
+    generalLimiter,
+    loginLimiter,
+    registerLimiter,
+    refreshLimiter,
+} from "./middleware/rateLimiters.js";
 
 
 export const app = express();
@@ -22,9 +27,9 @@ app.use(cors({
     credentials: true,
 }));
 app.use('/api', generalLimiter);
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
-app.use('/api/auth/refresh', authLimiter);
+app.use('/api/auth/login', loginLimiter);
+app.use('/api/auth/register', registerLimiter);
+app.use('/api/auth/refresh', refreshLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 

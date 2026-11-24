@@ -48,14 +48,18 @@ Luo projektin juureen tiedosto `.env` (sitä ei versioida, koska se on `.gitigno
 Voit luoda sen esimerkiksi PowerShellissa:
 
 ```powershell
-Set-Content .env 'DATABASE_URL="postgresql://myuser:mypassword@localhost:5434/chap10db?schema=public"'
+Set-Content .env @'
+DATABASE_URL="postgresql://myuser:mypassword@localhost:5434/chap10db?schema=public"
+JWT_ACCESS_SECRET="dev-access-secret-at-least-32-characters-long"
+JWT_REFRESH_SECRET="dev-refresh-secret-at-least-32-characters-different"
+'@
 ```
 
 `.env.test` on projektissa valmiina integraatiotesteja varten.
 
 Varmista, että arvot osoittavat Docker-konttiin (portti 5434):
 
-`.env`
+`.env`-tiedoston sisältö
 
 ```env
 DATABASE_URL="postgresql://myuser:mypassword@localhost:5434/chap10db?schema=public"
@@ -65,7 +69,7 @@ JWT_REFRESH_SECRET="your-refresh-secret-at-least-32-characters-different"
 
 Käytä eri, pitkää ja turvallista satunnaista arvoa molempiin salaisuuksiin. Älä käytä esimerkkiarvoja tuotannossa.
 
-`.env.test`
+`.env.test`-tiedoston sisältö
 
 ```env
 DATABASE_URL="postgresql://myuser:mypassword@localhost:5434/chap10db_test?schema=public"
@@ -176,6 +180,12 @@ docker run --name chap10-postgres `
   -e POSTGRES_DB=chap10db `
   -p 5434:5432 `
   -d postgres:16
+
+Set-Content .env @'
+DATABASE_URL="postgresql://myuser:mypassword@localhost:5434/chap10db?schema=public"
+JWT_ACCESS_SECRET="dev-access-secret-at-least-32-characters-long"
+JWT_REFRESH_SECRET="dev-refresh-secret-at-least-32-characters-different"
+'@
 
 docker exec chap10-postgres psql -U myuser -d postgres `
   -c "CREATE DATABASE chap10db_test;"

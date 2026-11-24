@@ -13,26 +13,31 @@ export async function registerUser(input: RegisterInput) {
     const hashedPassword = await argon2.hash(input.password, {
     type: argon2.argon2id,
     });
-    const user = await prisma.user.create({
-        data: {
-        email: input.email,
-        username: input.username,
-        password: hashedPassword,
-        },
-    });
-    const accessToken = await createAccessToken(user.id, user.role);
-    const refreshToken = await createRefreshToken(user.id);
-    const hashedRefreshToken = hashRefreshToken(refreshToken);
-    await prisma.refreshToken.create({
-        data: {
-        token: hashedRefreshToken,
-        userId: user.id,
-        expiresAt: daysFromNow(7),
-    },
+    const result = await prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+            data: {
+                email: input.email,
+                username: input.username,
+                password: hashedPassword,
+            },
+        });
+
+        const accessToken = await createAccessToken(user.id, user.role);
+        const refreshToken = await createRefreshToken(user.id);
+        const hashedRefreshToken = hashRefreshToken(refreshToken);
+
+        await tx.refreshToken.create({
+            data: {
+                token: hashedRefreshToken,
+                userId: user.id,
+                expiresAt: daysFromNow(7),
+            },
+        });
+
+        return { user, accessToken, refreshToken };
     });
 
-    return { user, accessToken, refreshToken };
-
+    return result;
 }
 
 export async function loginUser(input: LoginInput) {

@@ -9,7 +9,7 @@ import { prismaErrorHandler, generalErrorHandler, } from "./middleware/errorHand
 import cookieParser from 'cookie-parser';
 import helmet from "helmet";
 import cors from 'cors';
-import { generalLimiter, authLimiter } from "./middleware/rateLimiters.js";
+import { generalLimiter, loginLimiter, registerLimiter, refreshLimiter, } from "./middleware/rateLimiters.js";
 export const app = express();
 app.use(helmet());
 app.use(cors({
@@ -17,9 +17,9 @@ app.use(cors({
     credentials: true,
 }));
 app.use('/api', generalLimiter);
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
-app.use('/api/auth/refresh', authLimiter);
+app.use('/api/auth/login', loginLimiter);
+app.use('/api/auth/register', registerLimiter);
+app.use('/api/auth/refresh', refreshLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 app.use(authRouter);
@@ -29,7 +29,7 @@ app.use(transactionRouter);
 app.use(prismaErrorHandler);
 app.use(generalErrorHandler);
 if (process.env.NODE_ENV !== "test") {
-    const PORT = process.env.PORT || 8000;
+    const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
         console.log(`Express server running on port ${PORT}`);
     });

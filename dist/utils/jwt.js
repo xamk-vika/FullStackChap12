@@ -1,7 +1,14 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { SignJWT, jwtVerify } from 'jose';
-const accessSecret = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET);
-const refreshSecret = new TextEncoder().encode(process.env.JWT_REFRESH_SECRET);
+function requiredSecret(name) {
+    const value = process.env[name];
+    if (!value || value.length < 32) {
+        throw new Error(`${name} is missing or too short (min 32 chars)`);
+    }
+    return value;
+}
+const accessSecret = new TextEncoder().encode(requiredSecret('JWT_ACCESS_SECRET'));
+const refreshSecret = new TextEncoder().encode(requiredSecret('JWT_REFRESH_SECRET'));
 export async function createAccessToken(userId, role) {
     return new SignJWT({ role })
         .setProtectedHeader({ alg: 'HS256' })
