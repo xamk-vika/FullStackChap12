@@ -19,7 +19,7 @@ describe('auth reducer', () => {
   });
 
   it('should set user on login fulfilled', () => {
-    const user = { id: '1', username: 'Test', email: 'test@test.com', role: 'USER' };
+    const user = { id: 1, username: 'Test', email: 'test@test.com', role: 'USER' };
     const action = { type: 'auth/login/fulfilled', payload: user };
     const state = authReducer(initialState, action);
 
@@ -32,7 +32,7 @@ describe('auth reducer', () => {
     const loggedInState = {
       ...initialState,
       isAuthenticated: true,
-      user: { id: '1', username: 'Test', email: 'test@test.com', role: 'USER' },
+      user: { id: 1, username: 'Test', email: 'test@test.com', role: 'USER' },
     };
     const action = { type: 'auth/logout/fulfilled' };
     const state = authReducer(loggedInState, action);

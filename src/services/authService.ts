@@ -31,9 +31,8 @@ export async function registerUser(input: RegisterInput) {
     },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    return { user, accessToken, refreshToken };
 
-    return { user: userWithoutPassword, accessToken, refreshToken };
 }
 
 export async function loginUser(input: LoginInput) {
